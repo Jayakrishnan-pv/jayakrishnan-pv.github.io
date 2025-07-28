@@ -13,6 +13,7 @@
         body {
             font-family: 'Mountains of Christmas', cursive;
             overflow: hidden; /* Hide scrollbars */
+            cursor: none;
         }
 
         #main-heading {
@@ -31,6 +32,40 @@
             width: 100%;
             height: 100%;
             z-index: -1; /* Place canvas behind everything */
+        }
+
+        /* Target Cursor Styles */
+        .cursor-dot,
+        .cursor-outline {
+            pointer-events: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            border-radius: 50%;
+            opacity: 1;
+            transform: translate(-50%, -50%);
+            z-index: 9999;
+            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+        }
+
+        .cursor-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #b91c1c; /* red-700 */
+        }
+
+        .cursor-outline {
+            width: 40px;
+            height: 40px;
+            background-color: rgba(185, 28, 28, 0.3);
+            border: 2px solid rgba(185, 28, 28, 0.7);
+            transition: width 0.3s ease-in-out, height 0.3s ease-in-out, border-width 0.3s ease-in-out;
+        }
+        
+        .cursor-outline.hover {
+             width: 60px;
+             height: 60px;
+             border-width: 3px;
         }
 
         @keyframes pulse {
@@ -54,6 +89,10 @@
 </head>
 <body class="bg-black text-white">
     
+    <!-- Custom Cursor Elements -->
+    <div class="cursor-dot"></div>
+    <div class="cursor-outline"></div>
+
     <!-- Background Canvas -->
     <canvas id="bg-canvas"></canvas>
 
@@ -167,11 +206,52 @@
         initParticles();
         animateParticles();
 
+
+        // --- Target Cursor Effect ---
+        const cursorDot = document.querySelector(".cursor-dot");
+        const cursorOutline = document.querySelector(".cursor-outline");
+        const mousePos = { x: 0, y: 0 };
+        const outlinePos = { x: 0, y: 0 };
+
+        window.addEventListener("mousemove", e => {
+            mousePos.x = e.clientX;
+            mousePos.y = e.clientY;
+        });
+
+        const animateCursor = () => {
+            const delay = 0.15;
+            outlinePos.x += (mousePos.x - outlinePos.x) * delay;
+            outlinePos.y += (mousePos.y - outlinePos.y) * delay;
+            
+            cursorDot.style.transform = `translate(${mousePos.x}px, ${mousePos.y}px)`;
+            cursorOutline.style.transform = `translate(${outlinePos.x}px, ${outlinePos.y}px)`;
+            
+            requestAnimationFrame(animateCursor);
+        };
+        
+        document.addEventListener('DOMContentLoaded', () => {
+             cursorDot.style.transform = 'translate(-50%, -50%)';
+             cursorOutline.style.transform = 'translate(-50%, -50%)';
+             animateCursor();
+        });
+
+
+        // Add hover effect for links
+        document.querySelectorAll('a').forEach(link => {
+            link.addEventListener('mouseenter', () => {
+                cursorOutline.classList.add('hover');
+            });
+            link.addEventListener('mouseleave', () => {
+                cursorOutline.classList.remove('hover');
+            });
+        });
+
+
         // --- Text Decrypt Effect ---
         class TextScramble {
             constructor(el) {
                 this.el = el;
-                this.chars = '!<>-_\/[]{}—=+*^?#________';
+                this.chars = '!<>-_\\/[]{}—=+*^?#________';
                 this.update = this.update.bind(this);
             }
             setText(newText) {
@@ -240,7 +320,7 @@
             subHeading.innerText = '';
             description.innerText = '';
 
-            const runAnimations = async ().
+            const runAnimations = async () => {
                 mainHeading.style.opacity = 1;
                 subHeading.style.opacity = 1;
                 description.style.opacity = 1;

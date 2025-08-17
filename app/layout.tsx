@@ -2,8 +2,8 @@ import type React from 'react';
 import '../styles/globals.css';
 
 export const metadata = {
-  title: 'Next Atomic',
-  description: 'Next.js 15 App Router with Atomic Design and Tailwind CSS'
+  title: 'Jayakrishnan P.V',
+  description: 'This is my portfolio'
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
